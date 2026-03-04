@@ -3,110 +3,635 @@
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 		<style>
-			h1 {
-				text-align: center;
-			}
-
-			.container {
-				margin: 0 auto;
-				padding: 60px 20%;
-			}
-
-			figure {
-				text-align: center;
-			}
-
-			img {
-				display: inline-block;
-			}
-
-			body {
-				font-family: 'Inter', sans-serif;
-			}
+			h1 { text-align: center; }
+			.container { margin: 0 auto; padding: 60px 20%; }
+			figure { text-align: center; }
+			img { display: inline-block; max-width: 100%; }
+			body { font-family: 'Inter', sans-serif; line-height: 1.5; }
+			table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+			th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+			th { background: #f4f4f4; }
 		</style>
 	</head>
 	<body>
 		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
-
+		<h1>CS184/284A Spring 2026 Homework 1 Write-Up</h1>
+		<div style="text-align: center;">Names: Ziyue Zhu, Siyu Shen</div>
 		<br>
-
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		
-		<br>
-
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-
-		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
-
-		<!--
-		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-shen147258369/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-shen147258369/hw1/index.html</a>		<br>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw1-rasterizer-jinnnn">https://github.com/cal-cs184-student/hw1-rasterizer-jinnnn</a>
+		<br><br>
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		<p>This assignment implements a software rasterizer for rendering 2D SVG graphics. The rasterizer handles triangle rasterization, antialiasing through supersampling, geometric transformations, barycentric color interpolation, and texture mapping with different sampling methods.</p>
+
+		<h3>What I Built</h3>
+		<p>The core rasterization pipeline includes:</p>
+		<ul>
+			<li>Triangle rasterization using edge functions with bounding box optimization</li>
+			<li>Supersampling antialiasing with grid and jittered sampling patterns</li>
+			<li>2D transformations (translation, scaling, rotation) using homogeneous coordinates</li>
+			<li>Barycentric interpolation for smooth color gradients across triangles</li>
+			<li>Texture mapping with nearest-neighbor and bilinear pixel sampling</li>
+			<li>Mipmap level sampling for texture minification antialiasing</li>
+		</ul>
+
+		<h3>Key Learnings</h3>
+		<p>This assignment helped me understand:</p>
+		<ul>
+			<li>How rasterization converts continuous geometric primitives into discrete pixels</li>
+			<li>The tradeoffs between sampling quality and performance</li>
+			<li>How edge functions efficiently determine point-in-triangle tests</li>
+			<li>The importance of antialiasing techniques for high-quality rendering</li>
+			<li>How barycentric coordinates enable smooth interpolation across triangles</li>
+			<li>The role of mipmaps in reducing texture aliasing artifacts</li>
+		</ul>
+		<p>The most challenging part was implementing UV differentials for mipmap level calculation, which required understanding how texture coordinates change across screen space.</p>
+
+		<div style="page-break-after: always;"></div>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		
-		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Task 3: Transforms</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Task 4: Barycentric coordinates</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
+		<h3>Walk through how you rasterize triangles</h3>
+		<p>I implemented triangle rasterization using edge functions. The algorithm works as follows:</p>
+		<ol>
+			<li><b>Compute bounding box</b>: Find the min/max x and y coordinates of the three vertices to get the bounding box.</li>
+			<li><b>Convert to pixel coordinates</b>: Use floor() for min values and ceil() for max values to get the pixel range.</li>
+			<li><b>Clamp to screen</b>: Make sure the bounding box stays within the framebuffer bounds.</li>
+			<li><b>Iterate through pixels</b>: For each pixel in the bounding box, sample at pixel center and test if inside the triangle using edge functions.</li>
+			<li><b>Edge function</b>: For an edge from point A to B, the edge function gives positive = left (counter-clockwise), negative = right (clockwise), zero = on the edge.
 				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
+					<li>Positive = point is to the left (counter-clockwise)</li>
+					<li>Negative = point is to the right (clockwise)</li>
+					<li>Zero = point is on the edge</li>
 				</ul>
 			</li>
+			<li><b>Inside test</b>: A point is inside if all three edge function values have the same sign (or zero). This handles both clockwise and counter-clockwise ordering.</li>
+			<li><b>Fill pixel</b>: If inside, fill the pixel with the color.</li>
+		</ol>
+
+		<h3>Algorithm efficiency: no worse than bounding box sampling</h3>
+		<p>The algorithm only checks pixels within the triangle's bounding box. I iterate through exactly these pixels (start_x = floor(min_x), end_x = ceil(max_x), etc.). I don't check any pixels outside the bounding box, and I check every pixel inside it. So the number of samples is the minimum needed. The complexity is O(area of bounding box), which is optimal for this approach.</p>
+
+		<h3>Screenshot of basic/test4.svg</h3>
+		<figure>
+			<img src="myimg/T1-test4.png" alt="test4.svg screenshot"/>
+			<figcaption></figcaption>
+		</figure>
+		<p>This screenshot shows the rendering of basic/test4.svg with the pixel inspector centered on an interesting part of the scene. The image demonstrates that triangles are correctly rasterized, including the rectangle borders which are drawn as thin triangles.</p>
+
+		<h3>Extra Credit: Optimizations</h3>
+		<p>I implemented a few optimizations to speed up the rasterization:</p>
+
+		<h4>1. Pre-compute Edge Function Coefficients</h4>
+		<p>I compute the edge vectors and constants once before the loops instead of recalculating them for every pixel. This avoids recalculating (x1-x0), (y1-y0) etc. for every pixel.</p>
+
+		<h4>2. Incremental Edge Function Evaluation</h4>
+		<p>Edge functions can be evaluated incrementally. When moving from (x, y) to (x+1, y), the value changes by subtracting dy. So I compute the initial edge function values once per row, then just subtract dy when moving right. This reduces per-pixel computation from 6 multiplications + 6 additions to just 3 subtractions.</p>
+
+		<h4>3. Reduced Memory Access</h4>
+		<p>Keeping edge function values in local variables (registers) and updating them incrementally improves cache locality.</p>
+
+		<h4>Performance Impact</h4>
+		<p>The optimizations reduce arithmetic operations from ~12 per pixel (6 mult + 6 add) to ~3 per pixel (3 subtract), which is about 75% reduction.</p>
+
+		<h4>Timing Comparison</h4>
+		<p>I added timing code in DrawRend::redraw(). Here are the results comparing the basic and optimized implementations:</p>
+		<table>
+			<tr><th>Test Case</th><th>Basic</th><th>Optimized</th><th>Speedup</th></tr>
+			<tr><td>test3.svg</td><td>16.951 ms</td><td>15.396 ms</td><td>1.10x</td></tr>
+			<tr><td>test4.svg</td><td>0.597 ms</td><td>0.408 ms</td><td>1.46x</td></tr>
+			<tr><td>test5.svg</td><td>1.279 ms</td><td>0.917 ms</td><td>1.39x</td></tr>
+			<tr><td>test6.svg</td><td>1.019 ms</td><td>0.690 ms</td><td>1.48x</td></tr>
+		</table>
+		<p><b>Results:</b></p>
+		<ul>
+			<li>Average speedup: ~1.36x</li>
+			<li>Smaller triangles (test4, test5, test6) show better speedup (~1.4-1.5x) because the per-pixel optimization matters more relative to total cost</li>
+			<li>Larger triangles (test3) show smaller speedup (1.10x) because the per-row overhead becomes less significant</li>
+			<li>The incremental evaluation is effective because it eliminates redundant multiplications and uses simpler operations that pipeline better</li>
 		</ul>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Task 2: Antialiasing by Supersampling</h2>
+
+		<h3>Walk through your supersampling algorithm and data structures</h3>
+		<p>I implemented supersampling by treating the sample buffer as a higher-resolution framebuffer. The implementation works as follows:</p>
+
+		<h4>Data Structure</h4>
+		<p>The sample_buffer is a 1D vector of Color objects with size width × height × sample_rate. For each pixel at position (x, y), there are sample_rate samples stored consecutively.</p>
+
+		<h4>Algorithm</h4>
+		<ol>
+			<li><b>Compute grid layout</b>: For sample_rate = n, I create a sqrt(n) × sqrt(n) grid. For example, sample_rate = 16 gives a 4×4 grid.</li>
+			<li><b>Sample positions</b>: Within each pixel, I place samples at grid locations (grid sampling or jittered sampling with random offset).</li>
+			<li><b>Rasterization</b>: For each pixel in the triangle's bounding box, for each sample position, test if inside the triangle and store the triangle color if inside.</li>
+			<li><b>Resolve to framebuffer</b>: After all primitives are rasterized, for each pixel average all sample_rate samples and convert to 8-bit RGB.</li>
+		</ol>
+
+		<h3>Why is supersampling useful?</h3>
+		<p>Supersampling reduces aliasing artifacts by:</p>
+		<ul>
+			<li><b>Smoothing edges</b>: Instead of binary in/out decisions, pixels on edges get partial coverage based on how many samples are inside the triangle</li>
+			<li><b>Reducing stair-stepping</b>: The fractional coverage creates smooth gradients at edges</li>
+			<li><b>Better quality</b>: More samples per pixel provide better approximation of the continuous geometry</li>
+		</ul>
+
+		<h3>Modifications to the rasterization pipeline</h3>
+		<ol>
+			<li><b>fill_pixel()</b>: Modified to fill all sample_rate samples for a pixel (used by points and lines)</li>
+			<li><b>rasterize_triangle()</b>: Changed from single sample per pixel to multiple samples per pixel; samples in a grid pattern; each sample tested independently against the triangle.</li>
+			<li><b>resolve_to_framebuffer()</b>: Averages all samples for each pixel; converts from floating-point Color to 8-bit RGB.</li>
+			<li><b>set_sample_rate() and set_framebuffer_target()</b>: Updated to resize sample_buffer to width × height × sample_rate.</li>
+			<li><b>clear_buffers()</b>: Clears the sample_buffer at the start of each frame.</li>
+		</ol>
+
+		<h3>How supersampling antialiases triangles</h3>
+		<p>When a triangle edge passes through a pixel, some samples fall inside the triangle and some fall outside. The final pixel color is the average of all samples:</p>
+		<ul>
+			<li>If all samples are inside: pixel is fully colored</li>
+			<li>If some samples are inside: pixel gets a partial color (grayish on white background)</li>
+			<li>If no samples are inside: pixel remains white</li>
+		</ul>
+		<p>This creates smooth transitions at edges instead of hard boundaries, eliminating the "jaggies" or stair-stepping effect.</p>
+
+		<h3>Screenshots Comparison</h3>
+
+		<h4>Sample Rate 1 (No Supersampling)</h4>
+		<figure><img src="myimg/T2-1.png" alt="test4.svg sample rate 1"/></figure>
+		<p>With 1 sample per pixel, edges show clear aliasing artifacts. Each pixel is either fully colored or white, creating a stair-stepped appearance.</p>
+
+		<h4>Sample Rate 4 (2×2 Grid)</h4>
+		<figure><img src="myimg/T2-4.png" alt="test4.svg sample rate 4"/></figure>
+		<p>With 4 samples per pixel, edges become noticeably smoother. Pixels on edges show partial coverage, creating a gradient effect.</p>
+
+		<h4>Sample Rate 16 (4×4 Grid)</h4>
+		<figure><img src="myimg/T2-16.png" alt="test4.svg sample rate 16"/></figure>
+		<p>With 16 samples per pixel, edges are very smooth. The pixel inspector (top-right) shows how edge pixels have smooth color transitions.</p>
+		<p><b>Why these results are observed:</b></p>
+		<ul>
+			<li><b>Sample rate 1</b>: Only one sample at pixel center. Binary decision → hard edges</li>
+			<li><b>Sample rate 4</b>: 2×2 grid provides 4 coverage levels (0%, 25%, 50%, 75%, 100%) → smoother but still visible steps</li>
+			<li><b>Sample rate 16</b>: 4×4 grid provides 16 coverage levels → very smooth transitions, almost continuous</li>
+		</ul>
+		<p>The pixel inspector shows that at higher sample rates, edge pixels contain a mix of colored and white samples, which when averaged produce intermediate gray values that create the smooth appearance.</p>
+
+		<h3>Extra Credit: Alternative Sampling Pattern (Jittered Sampling)</h3>
+		<p>I implemented <b>Jittered Sampling</b> as an alternative to grid-based supersampling.</p>
+
+		<h4>Implementation</h4>
+		<p>Instead of placing samples at regular grid positions, jittered sampling adds a random offset to each grid position. The jitter is generated using a hash function based on pixel position and sample index, ensuring:</p>
+		<ul>
+			<li><b>Deterministic</b>: Same pixel always gets same jitter (reproducible)</li>
+			<li><b>Random-looking</b>: Breaks up regular patterns</li>
+			<li><b>Bounded</b>: Jitter is limited to keep samples within pixel bounds</li>
+		</ul>
+
+		<h4>Comparison: Grid vs Jittered Sampling</h4>
+		<h5>Grid Sampling (P_NEAREST)</h5>
+		<figure><img src="myimg/T2-16-P_NEAREST.png" alt="Grid sampling sample rate 16"/></figure>
+		<p>Grid sampling places samples at regular positions. This can sometimes create visible patterns or "moire" effects, especially with thin lines or small features.</p>
+
+		<h5>Jittered Sampling (P_LINEAR)</h5>
+		<figure><img src="myimg/T2-16-P_LINEAR.png" alt="Jittered sampling sample rate 16"/></figure>
+		<p>Jittered sampling randomizes sample positions, which:</p>
+		<ul>
+			<li><b>Breaks up regular patterns</b>: Random distribution prevents visible grid artifacts</li>
+			<li><b>Better for thin features</b>: Random sampling can better capture thin lines that might miss grid positions</li>
+			<li><b>Smoother appearance</b>: The randomness helps create more natural-looking antialiasing</li>
+		</ul>
+
+		<h4>When to Use Each</h4>
+		<ul>
+			<li><b>Grid sampling</b>: Faster (no hash computation), predictable, good for general use</li>
+			<li><b>Jittered sampling</b>: Better for scenes with thin lines, small features, or when grid patterns are visible</li>
+		</ul>
+		<p>Users can toggle between modes using the P key: P_NEAREST = Grid sampling, P_LINEAR = Jittered sampling.</p>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Task 3: Transforms</h2>
+
+		<h3>Implementation</h3>
+		<p>I implemented the three transform functions in transforms.cpp:</p>
+
+		<h4>1. translate(dx, dy)</h4>
+		<p>Returns a translation matrix in homogeneous coordinates. This matrix translates points by (dx, dy) in the x and y directions.</p>
+
+		<h4>2. scale(sx, sy)</h4>
+		<p>Returns a scaling matrix in homogeneous coordinates. This matrix scales points by sx in the x direction and sy in the y direction.</p>
+
+		<h4>3. rotate(deg)</h4>
+		<p>Returns a rotation matrix (counterclockwise) in homogeneous coordinates. The input deg is in degrees and is converted to radians. The rotation is counterclockwise as per SVG specification.</p>
+
+		<h3>Custom Robot: Waving Cubeman</h3>
+		<p>I created a custom robot SVG (docs/my_robot.svg) with the following modifications:</p>
+
+		<h4>Changes Made:</h4>
+		<ol>
+			<li><b>Color scheme</b>: Changed from red to blue for the body and darker blue for the head, with orange arms.</li>
+			<li><b>Waving animation</b>: Modified the left arm to create a waving gesture:
+				<ul>
+					<li>Upper arm: Rotated -45 degrees (raised up)</li>
+					<li>Lower arm: Translated and rotated 30 degrees (bent at elbow)</li>
+					<li>This creates a natural waving pose</li>
+				</ul>
+			</li>
+			<li><b>Right arm</b>: Kept in normal position for contrast</li>
+		</ol>
+
+		<h4>What I Was Trying to Do:</h4>
+		<p>I wanted to make the cubeman look like he's waving hello. The left arm is raised and bent at the elbow, creating a friendly waving gesture. The different colors help distinguish the body parts and make the robot more visually interesting.</p>
+		<figure><img src="myimg/T3-my-robot.png" alt="My custom robot"/></figure>
+		<p>This screenshot shows the cubeman with his left arm raised in a waving position, demonstrating the use of hierarchical transforms (translate, rotate, scale) to create a more dynamic pose.</p>
+
+		<h3>Extra Credit: Viewport Rotation</h3>
+		<p>I implemented viewport rotation using the Q and E keys: Q = counterclockwise 15°, E = clockwise 15°, Space = reset rotation.</p>
+
+		<h4>Implementation Details</h4>
+		<p>I added a view_rotation member variable to DrawRend class and modified set_view() to apply rotation to the svg_to_ndc transformation matrix in NDC space around the center point (0.5, 0.5). The rotation is composed as:</p>
+		<ol>
+			<li>Apply base transformation (translate and scale from SVG to NDC)</li>
+			<li>Translate to NDC origin (-0.5, -0.5)</li>
+			<li>Apply rotation</li>
+			<li>Translate back to NDC center (0.5, 0.5)</li>
+		</ol>
+		<p>This ensures the viewport rotates around its center in NDC space, not around the origin. The view_rotation variable is initialized in init() and reset when the space key is pressed.</p>
+
+		<h4>Demonstration</h4>
+		<figure><img src="myimg/T3-robot-original.png" alt="Original robot"/></figure>
+		<p>The viewport rotation feature allows users to view the scene from different angles, which can be useful for:</p>
+		<ul>
+			<li>Checking alignment and symmetry</li>
+			<li>Viewing complex scenes from different perspectives</li>
+			<li>Creating interesting visual effects</li>
+		</ul>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Task 4: Barycentric Coordinates</h2>
+
+		<h3>Explanation of Barycentric Coordinates</h3>
+		<p>Barycentric coordinates provide a way to represent any point inside a triangle as a weighted combination of the triangle's three vertices. For a triangle with vertices A, B, and C, any point P inside can be expressed as P = α·A + β·B + γ·C, where α, β, and γ are the barycentric coordinates satisfying:</p>
+		<ul>
+			<li>α + β + γ = 1</li>
+			<li>α ≥ 0, β ≥ 0, γ ≥ 0 (for points inside the triangle)</li>
+		</ul>
+		<p>The barycentric coordinates have a geometric interpretation: they represent the relative areas of the sub-triangles formed by P and the triangle's vertices:</p>
+		<ul>
+			<li><b>α</b> = area(PBC) / area(ABC) - weight for vertex A</li>
+			<li><b>β</b> = area(PAC) / area(ABC) - weight for vertex B</li>
+			<li><b>γ</b> = area(PAB) / area(ABC) - weight for vertex C</li>
+		</ul>
+
+		<h4>Visual Demonstration</h4>
+		<p>The following image shows a triangle with one red vertex, one green vertex, and one blue vertex. The colors smoothly blend across the triangle using barycentric interpolation:</p>
+		<figure><img src="myimg/T4-rgb_triangle.png" alt="RGB Triangle"/></figure>
+		<p>In this triangle:</p>
+		<ul>
+			<li>The top vertex is <b>red</b> (1, 0, 0)</li>
+			<li>The bottom-left vertex is <b>green</b> (0, 1, 0)</li>
+			<li>The bottom-right vertex is <b>blue</b> (0, 0, 1)</li>
+		</ul>
+		<p>As we move from one vertex to another, the color smoothly transitions:</p>
+		<ul>
+			<li>Near the red vertex, α ≈ 1, so the color is mostly red</li>
+			<li>Near the green vertex, β ≈ 1, so the color is mostly green</li>
+			<li>Near the blue vertex, γ ≈ 1, so the color is mostly blue</li>
+			<li>In the center, all three coordinates are roughly equal (α ≈ β ≈ γ ≈ 1/3), resulting in a mix of all three colors (white/light gray)</li>
+		</ul>
+		<p>The color wheel shown below demonstrates this interpolation effect across many triangles, each with different vertex colors that blend smoothly.</p>
+
+		<h3>Implementation</h3>
+		<p>I implemented rasterize_interpolated_color_triangle() by: (1) computing bounding box and iterating through pixels; (2) using edge functions to determine if a sample point is inside the triangle; (3) calculating barycentric coordinates using the edge function values (edge functions give signed areas, divide by triangle area for α, β, γ); (4) interpolating colors as alpha×c0 + beta×c1 + gamma×c2. The edge functions f12, f20, f01 give the signed areas; dividing by the triangle's area gives the barycentric coordinates.</p>
+
+		<h3>Screenshot of test7.svg (Color Wheel)</h3>
+		<figure><img src="myimg/T4-test7.png" alt="Color Wheel"/></figure>
+		<p>This screenshot shows svg/basic/test7.svg rendered with sample rate 1. The color wheel is composed of many small triangles, each with interpolated colors at their vertices. The smooth color transitions demonstrate that barycentric interpolation is working correctly.</p>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Task 5: Pixel Sampling for Texture Mapping</h2>
+
+		<h3>Explanation of Pixel Sampling</h3>
+		<p>Pixel sampling is the process of determining the color value at a given UV coordinate in a texture image. When rendering a textured triangle, we need to map UV coordinates (which are continuous values between 0 and 1) to discrete pixel positions in the texture image. Since UV coordinates are continuous but texture images are discrete grids of pixels, we need a method to determine which pixel(s) to use and how to combine them.</p>
+		<p>There are two main pixel sampling methods:</p>
+
+		<h4>1. Nearest Neighbor Sampling (P_NEAREST)</h4>
+		<p>Nearest neighbor sampling selects the single pixel in the texture that is closest to the UV coordinate. This is the simplest and fastest method:</p>
+		<ol>
+			<li>Convert UV coordinates [0, 1] to texture pixel coordinates [0, width/height]</li>
+			<li>Round to the nearest integer pixel coordinates</li>
+			<li>Return the color of that pixel</li>
+		</ol>
+		<p><b>Advantages:</b></p>
+		<ul>
+			<li>Very fast (no interpolation needed)</li>
+			<li>Preserves sharp edges and pixel art style</li>
+		</ul>
+		<p><b>Disadvantages:</b></p>
+		<ul>
+			<li>Can produce aliasing and blocky artifacts when textures are magnified</li>
+			<li>No smooth transitions between pixels</li>
+		</ul>
+
+		<h4>2. Bilinear Interpolation Sampling (P_LINEAR)</h4>
+		<p>Bilinear interpolation samples the four nearest pixels and blends them based on the fractional distance from the UV coordinate:</p>
+		<ol>
+			<li>Convert UV coordinates to continuous texture pixel coordinates</li>
+			<li>Find the four surrounding pixels (forming a 2×2 square)</li>
+			<li>Interpolate horizontally between the two bottom pixels and the two top pixels</li>
+			<li>Interpolate vertically between the two horizontal interpolations</li>
+		</ol>
+		<p><b>Advantages:</b></p>
+		<ul>
+			<li>Produces smooth, continuous color transitions</li>
+			<li>Reduces aliasing artifacts when textures are magnified</li>
+			<li>Better visual quality for most applications</li>
+		</ul>
+		<p><b>Disadvantages:</b></p>
+		<ul>
+			<li>Slightly slower (requires 4 pixel lookups and interpolation)</li>
+			<li>Can blur fine details in pixel art</li>
+		</ul>
+
+		<h3>Implementation</h3>
+		<p>I implemented texture mapping in three parts: (1) Texture::sample_nearest: convert UV to texture coordinates, round to nearest texel, return color. (2) Texture::sample_bilinear: get four surrounding texels, interpolate horizontally then vertically. (3) RasterizerImp::rasterize_textured_triangle: compute bounding box and pixels, barycentric coordinates, interpolate UV with barycentric weights, sample texture (nearest or bilinear based on psm), store in sample buffer.</p>
+
+		<h3>Comparison Screenshots</h3>
+		<p>The following screenshots demonstrate the differences between nearest and bilinear sampling at different sample rates. The pixel inspector is positioned over an area where the difference is most visible.</p>
+
+		<h4>Nearest Neighbor, 1 Sample per Pixel</h4>
+		<figure><img src="myimg/T5-nearest-1.png" alt="Nearest 1"/></figure>
+		<p>This shows blocky, pixelated artifacts when using nearest neighbor sampling with 1 sample per pixel. Each pixel takes the color of the nearest texture pixel, creating a "staircase" effect along edges.</p>
+
+		<h4>Nearest Neighbor, 16 Samples per Pixel</h4>
+		<figure><img src="myimg/T5-nearest-16.png" alt="Nearest 16"/></figure>
+		<p>With 16 samples per pixel, supersampling helps reduce aliasing at triangle edges, but the texture itself still shows blocky artifacts because we're still using nearest neighbor sampling for each individual sample.</p>
+
+		<h4>Bilinear Interpolation, 1 Sample per Pixel</h4>
+		<figure><img src="myimg/T5-bilinear-1.png" alt="Bilinear 1"/></figure>
+		<p>Bilinear interpolation produces much smoother texture appearance even with just 1 sample per pixel. The texture colors blend smoothly, eliminating the blocky artifacts seen in nearest neighbor sampling.</p>
+
+		<h4>Bilinear Interpolation, 16 Samples per Pixel</h4>
+		<figure><img src="myimg/T5-bilinear-16.png" alt="Bilinear 16"/></figure>
+		<p>Combining bilinear interpolation with 16 samples per pixel produces the smoothest result. Both the texture sampling and triangle edges are anti-aliased, resulting in high-quality rendering.</p>
+
+		<h3>Analysis and Discussion</h3>
+		<h4>When Will There Be a Large Difference?</h4>
+		<p>The difference between nearest and bilinear sampling is most pronounced when:</p>
+		<ol>
+			<li><b>Texture Magnification</b>: When a texture is displayed larger than its original size, bilinear interpolation smooths out the pixelation that would be visible with nearest neighbor sampling. <b>Why</b>: Nearest neighbor simply picks one pixel, so when magnified, each texture pixel becomes a visible block. Bilinear blends between four pixels, creating smooth transitions that hide the discrete nature of the texture.</li>
+			<li><b>Low-Resolution Textures</b>: Textures with few pixels benefit more from bilinear interpolation because the smooth transitions hide the limited resolution. <b>Why</b>: With fewer pixels, the blocky nature of nearest neighbor is more obvious. Bilinear interpolation creates the illusion of more detail by smoothly blending between pixels.</li>
+			<li><b>Gradient or Smooth Textures</b>: Textures with gradual color changes (like gradients, skies, or smooth surfaces) show the most improvement with bilinear sampling. <b>Why</b>: These textures rely on smooth color transitions. Nearest neighbor creates visible steps or "banding" where colors jump abruptly, while bilinear creates smooth gradients.</li>
+			<li><b>High Sample Rates</b>: With supersampling (16 samples per pixel), the difference becomes even more noticeable because each subsample gets a smoothly interpolated color rather than a blocky nearest neighbor color. <b>Why</b>: Supersampling averages multiple samples. With nearest neighbor, you're averaging blocky samples, which still looks blocky. With bilinear, you're averaging smooth samples, resulting in even smoother final pixels.</li>
+			<li><b>Oblique Texture Mapping</b>: When textures are mapped at angles or with perspective distortion, bilinear sampling provides better results. <b>Why</b>: The UV coordinates change more gradually across the surface, and bilinear interpolation handles these gradual changes better than nearest neighbor's discrete jumps.</li>
+		</ol>
+
+		<h4>Relative Differences</h4>
+		<p><b>Nearest vs Bilinear at 1 sample per pixel:</b></p>
+		<ul>
+			<li>Bilinear provides significantly smoother texture appearance, eliminating blocky artifacts</li>
+			<li>The difference is most visible in areas with gradual color changes</li>
+			<li>Nearest neighbor shows visible pixel boundaries, while bilinear creates smooth transitions</li>
+			<li><b>Why the difference</b>: Nearest neighbor is a discrete operation (one pixel), while bilinear is continuous (blends four pixels)</li>
+		</ul>
+		<p><b>Nearest vs Bilinear at 16 samples per pixel:</b></p>
+		<ul>
+			<li>Supersampling helps both methods with triangle edge aliasing</li>
+			<li>Bilinear still provides smoother texture sampling even with supersampling</li>
+			<li>The combination of bilinear interpolation and supersampling produces the best overall quality</li>
+			<li><b>Why the difference persists</b>: Supersampling helps with geometric aliasing (triangle edges) but doesn't change the texture sampling method. Nearest neighbor still samples discrete pixels, while bilinear still interpolates smoothly.</li>
+		</ul>
+		<p><b>1 sample vs 16 samples (same method):</b></p>
+		<ul>
+			<li>Supersampling primarily helps with triangle edge aliasing</li>
+			<li>For nearest neighbor, supersampling doesn't help much with texture quality (still blocky)</li>
+			<li>For bilinear, supersampling provides additional smoothness at edges</li>
+			<li><b>Why</b>: Supersampling averages multiple samples to reduce geometric aliasing, but the texture sampling method (nearest vs bilinear) determines the quality of each individual sample</li>
+		</ul>
+		<p><b>Conclusion</b>: Bilinear interpolation is generally preferred for most applications because it provides smooth, high-quality texture rendering with minimal performance cost. The smooth color transitions eliminate visible pixel boundaries and create more realistic-looking textures. Nearest neighbor sampling is mainly useful for pixel art (where blocky appearance is desired) or when performance is critical and visual quality can be sacrificed.</p>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Task 6: Level Sampling with Mipmaps</h2>
+
+		<h3>Explanation of Level Sampling</h3>
+		<p>Level sampling (also known as mipmapping) is a technique used to reduce aliasing artifacts when textures are minified (displayed smaller than their original size). The core idea is to pre-compute multiple versions of a texture at different resolutions, called mipmap levels:</p>
+		<ul>
+			<li><b>Level 0</b>: Full resolution texture (original size)</li>
+			<li><b>Level 1</b>: Half resolution (width/2 × height/2)</li>
+			<li><b>Level 2</b>: Quarter resolution (width/4 × height/4)</li>
+			<li>And so on...</li>
+		</ul>
+		<p>When rendering, we select an appropriate mipmap level based on how much the texture is being scaled. If a texture is displayed very small on screen, we use a lower resolution mipmap level to avoid sampling too many texture pixels per screen pixel, which causes aliasing and moiré patterns.</p>
+
+		<h4>How Mipmap Level is Calculated</h4>
+		<p>The mipmap level is determined by the rate of change of UV coordinates across screen space. We compute:</p>
+		<ol>
+			<li><b>UV derivatives</b>: How much UV coordinates change per screen pixel in x and y directions (du/dx, dv/dx when moving one pixel right; du/dy, dv/dy when moving down).</li>
+			<li><b>Level calculation</b>: L = max of derivative lengths, level = log2(L). When L = 1 we use level 0 (full resolution); when L = 2 we use level 1 (half resolution), etc.</li>
+		</ol>
+
+		<h4>Level Sampling Methods</h4>
+		<ol>
+			<li><b>L_ZERO</b>: Always use level 0 (full resolution), ignoring the computed level. This is fast but can cause aliasing when textures are minified.</li>
+			<li><b>L_NEAREST</b>: Compute the appropriate level and round to the nearest integer mipmap level. This provides good quality with minimal overhead.</li>
+			<li><b>L_LINEAR</b>: Compute the level as a continuous value, then linearly interpolate between the two adjacent mipmap levels. This is called <b>trilinear filtering</b> when combined with bilinear pixel sampling, providing the smoothest results.</li>
+		</ol>
+
+		<h3>Implementation</h3>
+		<p>I implemented level sampling in three parts:</p>
+
+		<h4>1. Texture::get_level(SampleParams)</h4>
+		<p>This function calculates the appropriate mipmap level based on UV derivatives (duv_dx, duv_dy from sample params, scale by texture size, L = max of derivative lengths, level = log2(L)).</p>
+
+		<h4>2. Texture::sample(SampleParams)</h4>
+		<p>This function selects the appropriate sampling method based on lsm and psm:</p>
+		<ul>
+			<li><b>L_ZERO</b>: Always samples from level 0</li>
+			<li><b>L_NEAREST</b>: Rounds the computed level to nearest integer and samples from that level</li>
+			<li><b>L_LINEAR</b>: Samples from two adjacent levels and linearly interpolates between them (trilinear filtering)</li>
+		</ul>
+
+		<h4>3. RasterizerImp::rasterize_textured_triangle</h4>
+		<p>For each sample point I compute UV at (x,y), (x+1,y), and (x,y+1), and pass them to Texture::sample() via SampleParams to enable level computation.</p>
+
+		<h3>Tradeoffs: Speed, Memory, and Antialiasing</h3>
+		<h4>Pixel Sampling (P_NEAREST vs P_LINEAR)</h4>
+		<p><b>Speed:</b></p>
+		<ul>
+			<li><b>P_NEAREST</b>: Very fast - single texture lookup</li>
+			<li><b>P_LINEAR</b>: Slightly slower - 4 texture lookups + interpolation</li>
+		</ul>
+		<p><b>Memory:</b> Same memory usage for both methods.</p>
+		<p><b>Antialiasing:</b></p>
+		<ul>
+			<li><b>P_NEAREST</b>: No antialiasing - can show blocky artifacts when textures are magnified</li>
+			<li><b>P_LINEAR</b>: Provides antialiasing for texture magnification - smooth color transitions</li>
+		</ul>
+
+		<h4>Level Sampling (L_ZERO vs L_NEAREST vs L_LINEAR)</h4>
+		<p><b>Speed:</b></p>
+		<ul>
+			<li><b>L_ZERO</b>: Fastest - always uses level 0, no computation needed</li>
+			<li><b>L_NEAREST</b>: Fast - computes level once, single mipmap lookup</li>
+			<li><b>L_LINEAR</b>: Slower - computes level, samples from 2 mipmap levels, interpolates</li>
+		</ul>
+		<p><b>Memory:</b> All methods use the same mipmap pyramid (pre-computed). <b>L_LINEAR</b> requires accessing 2 levels simultaneously, but memory overhead is minimal.</p>
+		<p><b>Antialiasing:</b></p>
+		<ul>
+			<li><b>L_ZERO</b>: No antialiasing for minification - can show aliasing and moiré patterns</li>
+			<li><b>L_NEAREST</b>: Good antialiasing for minification - reduces aliasing significantly</li>
+			<li><b>L_LINEAR</b>: Best antialiasing - smoothest transitions between mipmap levels</li>
+		</ul>
+
+		<h4>Samples Per Pixel (1 vs 4 vs 16)</h4>
+		<p><b>Speed:</b></p>
+		<ul>
+			<li><b>1 sample</b>: Fastest - one sample per pixel</li>
+			<li><b>4 samples</b>: 4× slower - 4 samples per pixel</li>
+			<li><b>16 samples</b>: 16× slower - 16 samples per pixel</li>
+		</ul>
+		<p><b>Memory:</b></p>
+		<ul>
+			<li><b>1 sample</b>: width × height samples in buffer</li>
+			<li><b>4 samples</b>: 4 × width × height samples</li>
+			<li><b>16 samples</b>: 16 × width × height samples</li>
+		</ul>
+		<p><b>Antialiasing:</b></p>
+		<ul>
+			<li><b>1 sample</b>: No geometric antialiasing - jagged triangle edges</li>
+			<li><b>4 samples</b>: Moderate geometric antialiasing</li>
+			<li><b>16 samples</b>: Excellent geometric antialiasing - very smooth edges</li>
+		</ul>
+
+		<h4>Combined Effects</h4>
+		<p>The best quality (but slowest) combination is:</p>
+		<ul>
+			<li><b>P_LINEAR + L_LINEAR + 16 samples</b> = Trilinear filtering with supersampling</li>
+		</ul>
+		<p>The fastest (but lowest quality) combination is:</p>
+		<ul>
+			<li><b>P_NEAREST + L_ZERO + 1 sample</b> = No filtering, no antialiasing</li>
+		</ul>
+		<p>For most applications, a good balance is:</p>
+		<ul>
+			<li><b>P_LINEAR + L_NEAREST + 4 samples</b> = Good quality with reasonable performance</li>
+		</ul>
+
+		<h3>Comparison Screenshots</h3>
+		<p>The following screenshots demonstrate different combinations of level sampling and pixel sampling methods using a texture image. All screenshots use 1 sample per pixel to focus on the texture sampling differences.</p>
+
+		<h4>L_ZERO + P_NEAREST</h4>
+		<figure><img src="myimg/T6-LZERO-PNEAREST.png" alt="L_ZERO + P_NEAREST"/></figure>
+		<p>This combination uses full resolution texture (level 0) with nearest neighbor pixel sampling. The texture shows blocky, pixelated artifacts, especially when magnified. There's no antialiasing for either texture magnification or minification.</p>
+
+		<h4>L_ZERO + P_LINEAR</h4>
+		<figure><img src="myimg/T6-LZERO-PLINEAR.png" alt="L_ZERO + P_LINEAR"/></figure>
+		<p>Using bilinear pixel sampling with level 0 provides smooth color transitions, eliminating the blocky artifacts seen in nearest neighbor sampling. However, when the texture is minified (zoomed out), aliasing and moiré patterns can still appear because we're always using the full resolution texture.</p>
+
+		<h4>L_NEAREST + P_NEAREST</h4>
+		<figure><img src="myimg/T6-LNEAREST-PNEAREST.png" alt="L_NEAREST + P_NEAREST"/></figure>
+		<p>With level sampling enabled, the texture automatically uses lower resolution mipmap levels when minified, reducing aliasing. However, nearest neighbor pixel sampling still produces blocky artifacts when the texture is magnified.</p>
+
+		<h4>L_NEAREST + P_LINEAR</h4>
+		<figure><img src="myimg/T6-LNEAREST-PLINEAR.png" alt="L_NEAREST + P_LINEAR"/></figure>
+		<p>This combination provides the best overall quality: bilinear pixel sampling smooths out magnification artifacts, while level sampling (mipmapping) reduces minification aliasing. The texture appears smooth and free of aliasing artifacts in both cases.</p>
+
+		<h3>Analysis</h3>
+		<p><b>Key Observations:</b></p>
+		<ol>
+			<li><b>L_ZERO vs L_NEAREST</b>: When textures are minified (zoomed out), L_NEAREST significantly reduces aliasing and moiré patterns by using appropriate mipmap levels. L_ZERO can show severe aliasing in these cases.</li>
+			<li><b>P_NEAREST vs P_LINEAR</b>: Bilinear pixel sampling provides much smoother texture appearance, especially when textures are magnified. Nearest neighbor creates visible pixel boundaries.</li>
+			<li><b>Combined Effect</b>: The combination of L_NEAREST + P_LINEAR provides excellent quality for both magnification and minification, making it the preferred choice for most applications.</li>
+			<li><b>Performance Tradeoff</b>: L_LINEAR (trilinear filtering) provides even smoother results by interpolating between mipmap levels, but at additional computational cost. For most cases, L_NEAREST + P_LINEAR provides a good balance between quality and performance.</li>
+		</ol>
+		<p><b>When to Use Each Method:</b></p>
+		<ul>
+			<li><b>L_ZERO + P_NEAREST</b>: Fastest, suitable for pixel art or when performance is critical</li>
+			<li><b>L_ZERO + P_LINEAR</b>: Good for textures that are always displayed at similar sizes</li>
+			<li><b>L_NEAREST + P_NEAREST</b>: Good balance when textures vary in size but pixel art style is desired</li>
+			<li><b>L_NEAREST + P_LINEAR</b>: Best general-purpose combination (recommended)</li>
+			<li><b>L_LINEAR + P_LINEAR</b>: Highest quality, use when visual quality is paramount</li>
+		</ul>
+
+		<div style="page-break-after: always;"></div>
+
+		<h2>Extra Credit: Creative Artwork</h2>
+
+		<h3>Artwork Description</h3>
+		<p>I created a stylized Beagle dog titled "Cute Beagle" - a charming, geometric representation of a beagle using colored triangles and polygons. The design captures the characteristic features of a beagle: long floppy ears, expressive eyes, a distinctive snout, and the classic beagle color pattern of white, tan, and brown.</p>
+		<figure><img src="myimg/Extra-Credit-Beagle.png" alt="Competition Artwork"/></figure>
+
+		<h3>How I Created It</h3>
+		<p>I wrote a Python script (src/generate_art.py) that programmatically generates the SVG file. The script creates a stylized beagle using geometric shapes with the following features:</p>
+
+		<h4>Algorithm</h4>
+		<ol>
+			<li><b>Body Structure</b>: The beagle is constructed from several main components:
+				<ul>
+					<li><b>Head</b>: An oval shape positioned above the body</li>
+					<li><b>Body</b>: A larger oval representing the torso</li>
+					<li><b>Ears</b>: Two long, floppy triangular shapes on either side of the head</li>
+					<li><b>Legs</b>: Four rectangular legs (two front, two back)</li>
+					<li><b>Tail</b>: A curved tail with a white tip</li>
+					<li><b>Snout</b>: A smaller oval extending from the head</li>
+				</ul>
+			</li>
+			<li><b>Color Palette</b>: Uses authentic beagle colors:
+				<ul>
+					<li><b>White</b> (0.95, 0.95, 0.95): For the body, chest, snout, and tail tip</li>
+					<li><b>Tan</b> (0.85, 0.65, 0.45): For patches on the body and back legs</li>
+					<li><b>Brown</b> (0.55, 0.35, 0.20): For the ears and head patch</li>
+					<li><b>Black</b> (0.1, 0.1, 0.1): For the eyes and nose</li>
+					<li><b>Pink</b> (0.95, 0.75, 0.80): For the inner ear</li>
+				</ul>
+			</li>
+			<li><b>Shape Generation</b>:
+				<ul>
+					<li><b>Oval shapes</b> (head, body, snout): Created using triangles radiating from the center, with varying colors for depth</li>
+					<li><b>Polygons</b>: Used for ears, legs, tail, and patches</li>
+					<li><b>Triangles</b>: Used for the nose and to create smooth oval shapes</li>
+				</ul>
+			</li>
+			<li><b>Triangle Rendering</b>: The oval shapes (head, body, snout) are rendered using colored triangles with barycentric interpolation:
+				<ul>
+					<li>Each oval is divided into 32 triangular segments</li>
+					<li>Triangles radiate from the center point</li>
+					<li>Each vertex has slightly different brightness to create depth</li>
+					<li>Color varies based on position to create the characteristic beagle markings</li>
+				</ul>
+			</li>
+			<li><b>Background</b>: Added a simple sky-blue background with green grass at the bottom to place the beagle in a natural setting.</li>
+		</ol>
+
+		<h4>Technical Details</h4>
+		<ul>
+			<li><b>Resolution</b>: 800×800 pixels as required</li>
+			<li><b>Background</b>: Black (#000000) to make colors pop</li>
+			<li><b>Elements Used</b>: colortri for triangles with barycentric color interpolation, polygon for circles, rect for background.</li>
+		</ul>
+
+		<h4>The Script</h4>
+		<p>The script (src/generate_art.py) defines parameters, generates SVG header and background, builds shapes (ovals from triangles, polygons for ears/legs/tail), outputs colortri and polygon elements, and writes the complete SVG file.</p>
+
+		<h4>Key Features</h4>
+		<ul>
+			<li><b>Procedural Generation</b>: The entire beagle is generated algorithmically, making it easy to modify size, colors, and proportions</li>
+			<li><b>Geometric Stylization</b>: Uses simple geometric shapes (ovals, triangles, polygons) to create a recognizable beagle silhouette</li>
+			<li><b>Authentic Colors</b>: Uses the classic beagle color scheme (white, tan, brown, black)</li>
+			<li><b>Barycentric Interpolation</b>: The oval shapes use colored triangles with barycentric interpolation to create smooth gradients and depth</li>
+			<li><b>Characteristic Features</b>: Includes all the distinctive beagle features: long ears, expressive eyes, snout, and color patches</li>
+		</ul>
+
+		<h4>Running the Script</h4>
+		<p>To regenerate the artwork, run the script from the src directory; it creates docs/competition.svg which can then be rendered using the rasterizer.</p>
+
+		<h3>Artistic Intent</h3>
+		<p>The "Cute Beagle" combines the precision of geometric art with the warmth of a beloved pet. By using simple shapes and the rasterizer's barycentric color interpolation, I created a stylized yet recognizable representation of a beagle. The design demonstrates how complex forms can be broken down into basic geometric primitives while maintaining character and charm. The authentic beagle color palette and characteristic features (long ears, expressive eyes, distinctive markings) make the dog instantly recognizable, while the geometric construction showcases the technical capabilities of the rasterizer.</p>
+
 		</div>
 	</body>
 </html>
