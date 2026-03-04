@@ -14,6 +14,7 @@
 
 			figure {
 				text-align: center;
+				margin: 16px 0;
 			}
 
 			img {
@@ -23,12 +24,30 @@
 			body {
 				font-family: 'Inter', sans-serif;
 			}
+
+			.two-img-container {
+				display: flex;
+				justify-content: center;
+				gap: 16px;
+				margin: 16px 0;
+			}
+
+			.two-img-item {
+				text-align: center;
+				width: 45%;
+			}
+
+			td figcaption {
+				display: block;
+				margin-top: 8px;
+				font-size: 14px;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 2 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<h1>CS184/284A Spring 2026 Homework 2 Write-Up</h1>
+		<div style="text-align: center;">Names: Siyu Shen & Ziyue Zhu</div>
 
 		<br>
 
@@ -36,81 +55,308 @@
 
 		<br>
 		
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-
-		<figure>
-			<img src="teapot.png" alt="Teapot" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
-
-		<!--
-		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
-
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw2-meshedit-kittykitty">https://github.com/cal-cs184-student/hw2-meshedit-kittykitty</a>
+		
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		In this assignment, I implemented several fundamental geometry processing algorithms, including Bezier curve evaluation, Bezier surface evaluation, area-weighted vertex normals, edge flip, edge split, and Loop subdivision. I also completed the boundary handling extension and implemented the Modified Butterfly subdivision scheme as extra credit. Finally, I created a custom model to explore the visual effects of repeated subdivision.
+
+		This project gave me a deeper understanding of how geometric modeling systems are structured. The half-edge data structure was especially important, since it provides a clean and efficient way to represent mesh connectivity while allowing safe topology modifications such as flipping and splitting edges. Through debugging and testing, I learned how small pointer mistakes can break manifold structure, and how careful ordering of operations is essential for subdivision algorithms.
 
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		In this part, I implemented de Casteljau’s algorithm to evaluate Bezier curves using recursive linear interpolation. Given a set of control points and a parameter t between 0 and 1, the algorithm repeatedly interpolates between adjacent control points until only a single point remains. This final point lies on the Bezier curve.
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
+		My implementation constructs intermediate levels explicitly. At each recursion level, I compute a new set of interpolated points. This makes it easier to visualize the algorithm step by step.
+
+		The scroll wheel controls the value of t. Changing t moves the evaluated point continuously along the curve. Dragging control points updates the entire curve dynamically, which verifies that the implementation responds correctly to changes in geometry.
+
+		Run:
+		<code>./meshedit ../bzc/curve1.bzc</code>
+
+		Press <code>E</code> repeatedly to show subdivision levels.
+
+		<div style="display: flex; flex-direction: column; align-items: center; margin: 16px 0;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td style="text-align: center; padding: 8px;">
+				  <img src="images/p1_level0.png" width="400px"/>
+				  <figcaption>Initial control polygon</figcaption>
 				</td>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td style="text-align: center; padding: 8px;">
+				  <img src="images/p1_level1.png" width="400px"/>
+				  <figcaption>After pressing E once</figcaption>
 				</td>
 			  </tr>
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td style="text-align: center; padding: 8px;">
+				  <img src="images/p1_level2.png" width="400px"/>
+				  <figcaption>After pressing E twice</figcaption>
 				</td>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td style="text-align: center; padding: 8px;">
+				  <img src="images/p1_level3.png" width="400px"/>
+				  <figcaption>After pressing E three times</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
+		<h4>Dragging Control Points</h4>
+		Dragging a control point modifies the curve.
+		<figure>
+			<img src="images/p1_drag_control.png" width="60%"/>
+			<figcaption>Dragging a control point</figcaption>
+		</figure>
+
+		<h4>Changing Parameter t</h4>
+		Scrolling changes t in [0,1], moving the evaluated point along the curve.
+		<figure>
+			<img src="images/p1_change_t.png" width="60%"/>
+			<figcaption>Changing parameter t</figcaption>
+		</figure>
+
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		To evaluate Bezier surfaces, I extended the 1D de Casteljau algorithm into two dimensions using a separable approach. First, I evaluated Bezier curves along one parametric direction to obtain intermediate control points. Then I applied de Casteljau again along the other direction.
+
+		This approach reduces 2D surface evaluation into repeated 1D curve evaluations, which simplifies implementation and ensures correctness.
+
+		Run:
+		<code>./meshedit ../bez/teapot.bez</code>
+
+		<figure>
+			<img src="images/p2_teapot.png" width="70%"/>
+			<figcaption>Bezier surface teapot</figcaption>
+		</figure>
 
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		I implemented Vertex::normal() by iterating over the one-ring of a vertex and summing area-weighted face normals using cross products. After accumulating all weighted normals, I normalized the result to obtain the final unit normal vector for shading.
+
+		The difference between flat shading and area-weighted shading can be clearly seen below.
+
+		Run:
+		<code>./meshedit ../dae/teapot.dae</code>
+
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p3_q_off.png" width="100%"/>
+				<figcaption>Before pressing Q</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p3_q_on.png" width="100%"/>
+				<figcaption>After pressing Q</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Flat shading (left) vs smooth shading (right)</figcaption>
 
 		<h3>Part 4: Edge flip</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		I implemented edge flipping by modifying the connectivity of the two triangles that share the selected edge. The operation replaces the diagonal of a quadrilateral formed by the two triangles with the other diagonal.
+
+		During implementation, I carefully reassigned all half-edge pointers, including next, twin, vertex, edge, and face references. Maintaining consistent connectivity was crucial to avoid breaking manifold structure.
+
+		Run:
+		<code>./meshedit ../dae/teapot.dae</code>
+
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p4_before.png" width="100%"/>
+				<figcaption>Before edge flip</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p4_after.png" width="100%"/>
+				<figcaption>After edge flip</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Before and after flipping an interior edge</figcaption>
 
 		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		For edge splitting, I inserted a new vertex at the midpoint of the selected edge. The two original adjacent triangles were replaced with four new triangles. This required creating new half-edges, edges, and faces while carefully updating connectivity relationships.
+
+		I stored references to all relevant half-edges before modifying them to avoid losing track of connectivity during updates.
+
+		Run:
+		<code>./meshedit ../dae/teapot.dae</code>
+
+		<h4>Single Edge Split</h4>
+		Select an interior edge and press <code>S</code>.
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p5_split_before.png" width="100%"/>
+				<figcaption>Before edge split</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p5_split_after.png" width="100%"/>
+				<figcaption>After edge split</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Before and after splitting a single interior edge</figcaption>
+
+		<h4>Mixed Split and Flip Operations</h4>
+		After performing several edge splits, I additionally applied edge flips (<code>F</code>) to test stability and connectivity consistency.
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p5_mix_before.png" width="100%"/>
+				<figcaption>Before mixed operations</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p5_mix_after.png" width="100%"/>
+				<figcaption>After mixed operations</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Mesh before and after mixed split and flip operations</figcaption>
+
+		<h4>Part 5 Extra Credit: Boundary Edge Split</h4>
+		I extended my edge split implementation to support boundary edges. For a boundary edge, only the non-boundary face is split, while the virtual boundary loop is updated to maintain a valid half-edge structure.
+
+		Run:
+		<code>./meshedit ../docs/boundary_test.dae</code>
+
+		Press <code>W</code> to enable wireframe mode.
+		Select a boundary edge and press <code>S</code>.
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p5_boundary_before.png" width="100%"/>
+				<figcaption>Before boundary edge split</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p5_boundary_after.png" width="100%"/>
+				<figcaption>After boundary edge split</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Before and after splitting a boundary edge</figcaption>
+
+		I also tested repeated boundary splits to ensure stability.
+		<figure>
+			<img src="images/p5_boundary_multi.png" width="60%"/>
+			<figcaption>Multiple consecutive boundary splits</figcaption>
+		</figure>
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		I implemented Loop subdivision following the recommended multi-step procedure:
+		(1) compute new positions for all original vertices using the Loop weighting rule based on their valence,
+		(2) split every original edge,
+		(3) flip new edges connecting old and new vertices,
+		(4) update vertex positions.
+
+		Run:
+		<code>./meshedit ../dae/cube.dae</code>
+
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p6_cube_0.png" width="100%"/>
+				<figcaption>Original cube</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p6_cube_1.png" width="100%"/>
+				<figcaption>After 1 subdivision</figcaption>
+			</div>
+		</div>
+		<figure>
+			<img src="images/p6_cube_2.png" width="45%"/>
+			<figcaption>After 2 subdivisions</figcaption>
+		</figure>
+
+		<h4>Preprocessing Cube for Symmetry</h4>
+		Before subdivision, I manually flipped several edges to improve symmetry.
+		Select edges → press <code>F</code> → screenshot  
+		Then press <code>L</code> → screenshot
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p6_preprocess_beforeL.png" width="100%"/>
+				<figcaption>After manual edge flips</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p6_preprocess_afterL.png" width="100%"/>
+				<figcaption>After subdivision</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Cube after manual edge flips (left) and after subdivision (right)</figcaption>
+
+		<h4>Part 6 Extra Credit: Boundary Support</h4>
+		I extended Loop subdivision to support meshes with boundaries.
+		Boundary edge midpoints use simple averaging, and boundary vertex updates use the weighted rule.
+
+		Run:
+		<code>./meshedit ../docs/boundary_test.dae</code>
+
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p6_boundary_before.png" width="100%"/>
+				<figcaption>Before subdivision</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p6_boundary_after1L.png" width="100%"/>
+				<figcaption>After 1 round</figcaption>
+			</div>
+		</div>
+		<figure>
+			<img src="images/p6_boundary_after2L.png" width="45%"/>
+			<figcaption>After 2 rounds of subdivision</figcaption>
+		</figure>
+
+		<h4>Extra Credit: Modified Butterfly Subdivision</h4>
+		I implemented the Modified Butterfly subdivision scheme as an alternative to Loop subdivision. Unlike Loop subdivision, Modified Butterfly is an interpolatory scheme, meaning original vertices remain fixed after subdivision.
+
+		To test the scheme:
+		Change in <code>student_code.cpp</code>:
+		<code>kSubdivisionScheme = SubdivisionScheme::ModifiedButterfly;</code>
+
+		Rebuild:
+		<code>make -j8</code>
+
+		Run:
+		<code>./meshedit ../dae/cube.dae</code>
+
+		<h5>After 1 Subdivision</h5>
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p6_cube_1.png" width="100%"/>
+				<figcaption>Loop subdivision</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p6_butterfly_1.png" width="100%"/>
+				<figcaption>Modified Butterfly subdivision</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Loop subdivision (left) vs Modified Butterfly (right) after 1 round</figcaption>
+
+		<h5>After 2 Subdivisions</h5>
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p6_cube_2.png" width="100%"/>
+				<figcaption>Loop subdivision</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p6_butterfly_2.png" width="100%"/>
+				<figcaption>Modified Butterfly subdivision</figcaption>
+			</div>
+		</div>
+		<figcaption style="text-align: center; display: block; margin-top: 8px;">Loop subdivision (left) vs Modified Butterfly (right) after 2 rounds</figcaption>
+
+		The comparison shows that Loop subdivision smooths and shrinks the mesh, while Modified Butterfly preserves original vertex positions and maintains sharper features due to its interpolatory nature.
 
 		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		I created a custom model and applied subdivision repeatedly to observe smoothing behavior. The results demonstrate how subdivision progressively increases smoothness while preserving overall shape.
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		Run:
+		<code>./meshedit ../docs/artcompetition.dae</code>
+
+		<div class="two-img-container">
+			<div class="two-img-item">
+				<img src="images/p7_art_original.png" width="100%"/>
+				<figcaption>Original model</figcaption>
+			</div>
+			<div class="two-img-item">
+				<img src="images/p7_art_subdiv1.png" width="100%"/>
+				<figcaption>After 1 subdivision</figcaption>
+			</div>
+		</div>
+		<figure>
+			<img src="images/p7_art_subdiv2.png" width="45%"/>
+			<figcaption>After 2 subdivisions</figcaption>
+		</figure>
+
 		</div>
 	</body>
 </html>
